@@ -14,10 +14,10 @@ const serviceAuth = new GoogleAuth({
 
 // fetch list of calendar events from user's primary Google Calendar.
 export const listEvents = async () => {
-  const calendar = google.calendar({version: 'v3', auth: serviceAuth}); // creates instance of Google Calendar API client using  an oauth2Client that is already authenticated or ready to be authenticated.
+  const calendar = google.calendar({version: 'v3', auth: serviceAuth}); // creates instance of Google Calendar API client using GoogleAuth
   try{
     const result = await calendar.events.list({
-      calendarId: 'primary', // Make sure this is the shared calendar ID
+      calendarId: config.calendarID,
       timeMin: (new Date()).toISOString(),
       maxResults: 10,
       singleEvents: true,
