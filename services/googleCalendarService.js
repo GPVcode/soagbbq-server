@@ -22,6 +22,7 @@ export const listEvents = async () => {
       maxResults: 10,
       singleEvents: true,
       orderBy: 'startTime',
+      // Refactored Google Calendar service middleware to optimize data retrieval by selectively fetching only essential fields (summary, description, start, end, and attachments) for events. This change reduces the network bandwidth usage, improves response times, and decreases the processing load on both the server and client sides.
       fields: 'items(id,summary,description,start,end,attachments)'
     });
     return result.data.items;
