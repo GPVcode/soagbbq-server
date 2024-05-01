@@ -22,6 +22,7 @@ export const listEvents = async () => {
       maxResults: 10,
       singleEvents: true,
       orderBy: 'startTime',
+      fields: 'items(id,summary,description,start,end,attachments)'
     });
     return result.data.items;
   } catch (error) {
