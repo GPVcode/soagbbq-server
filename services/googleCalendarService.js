@@ -7,8 +7,13 @@ import { GoogleAuth } from 'google-auth-library';
 import { config } from "../config/index.js";
 
 // Service account for server-to-server interaction
+
+const serviceAccountCredentialsJson = Buffer.from(config.serviceAccountCredentials, 'base64').toString();
+const credentials = JSON.parse(serviceAccountCredentialsJson);
+
 const serviceAuth = new GoogleAuth({
-    keyFile: config.serviceAccountKeyFile, // Path to your service account key file
+    // keyFile: config.serviceAccountKeyFile, // Path to your service account key file
+    credentials,
     scopes: ['https://www.googleapis.com/auth/calendar.events.readonly'],
   });
 
