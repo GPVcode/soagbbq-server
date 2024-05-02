@@ -21,10 +21,6 @@ This project implements a Node.js server for the Son of a Gun BBQ's website to f
 
 - **GET /events**: Fetches and returns a list of upcoming events from the configured Google Calendar.
 
-## Security
-
-This project uses Base64-encoded credentials for the Google service account to enhance security. Ensure that the `.env` file is never pushed to version control.
-
 ## Contributing
 
 Contributions are welcome. Please fork the repository and submit a pull request with your enhancements.
