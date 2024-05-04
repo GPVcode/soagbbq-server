@@ -19,7 +19,7 @@ This project implements a Node.js server for the Son of a Gun BBQ's website to f
 
 ## Endpoints
 
-- **GET /events**: Fetches and returns a list of upcoming events from the configured Google Calendar.
+- **GET /events**: Fetches and returns a list of upcoming events from the configured Google Calendar. Data is filtered for maximized performance.
 
 ## Contributing
 
