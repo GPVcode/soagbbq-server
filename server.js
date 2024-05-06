@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-
 import { config } from './config/index.js'
 import { calendarRoute } from './routes/calendarRoutes.js'; 
 
@@ -17,4 +16,5 @@ app.use((err, req, res, next) => {
   res.status(statusCode).send(errorMessage);
 });
 
-app.listen(config.port, () => console.log(`Server running on port ${config.port}`))
+const port = config.port || 3000;
+app.listen(port, () => console.log(`Server running on port ${port}`))

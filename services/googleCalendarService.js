@@ -1,51 +1,70 @@
-// Initiating OAuth2 authentication by generating an authentication URL.
-// Handling the OAuth2 callback to exchange an authorization code for tokens.
-// Fetching calendar events using authenticated API calls.
-
 import { google } from "googleapis";
 import { GoogleAuth } from 'google-auth-library';
 import { config } from "../config/index.js";
-
-// Service account for server-to-server interaction
 
 const serviceAccountCredentialsJson = Buffer.from(config.serviceAccountCredentials, 'base64').toString();
 const credentials = JSON.parse(serviceAccountCredentialsJson);
 
 const serviceAuth = new GoogleAuth({
-  // keyFile: config.serviceAccountKeyFile, // Path to your service account key file
-  credentials,
-  scopes: ['https://www.googleapis.com/auth/calendar.events.readonly'],
+    credentials,
+    scopes: ['https://www.googleapis.com/auth/calendar.events.readonly'],
 });
 
+const calendar = google.calendar({ version: 'v3', auth: serviceAuth });
+
+let cachedEvents = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 3600000;  // 1 hour in milliseconds
 
 const formatEventDates = (event) => {
-  const formattedEvent = { ...event };
-  if (event.start.dateTime) {
-    formattedEvent.start = new Date(event.start.dateTime).toLocaleString();
-    formattedEvent.end = new Date(event.end.dateTime).toLocaleString();
-  } else {
-    formattedEvent.start = new Date(event.start.date).toLocaleDateString();
-    formattedEvent.end = new Date(event.end.date).toLocaleDateString();
-  }
-  return formattedEvent;
+    const formattedEvent = { ...event };
+    const startDate = new Date(event.start.dateTime || event.start.date).toLocaleDateString("en-US", { month: "long", day: "numeric" });
+    const endDate = new Date(event.end.dateTime || event.end.date).toLocaleDateString("en-US", { month: "long", day: "numeric" });
+    formattedEvent.start = startDate;
+    formattedEvent.end = endDate;
+    formattedEvent.description = event.description && event.description.toLowerCase() !== 'undefined' ? event.description : '';
+    return formattedEvent;
 };
 
-// fetch list of calendar events from user's primary Google Calendar.
+const refreshEvents = async () => {
+    try {
+        console.log("Refreshing events...");
+        const result = await calendar.events.list({
+            calendarId: config.calendarID,
+            timeMin: (new Date()).toISOString(),
+            maxResults: 10,
+            singleEvents: true,
+            orderBy: 'startTime',
+            fields: 'items(id,summary,description,start,end,attachments,updated)',
+        });
+
+        cachedEvents = result.data.items.map(formatEventDates);
+        cacheTimestamp = Date.now();
+        console.log("Events refreshed successfully");
+        return cachedEvents;
+    } catch (error) {
+        console.error('Failed to refresh events:', error);
+        cachedEvents = null;
+        cacheTimestamp = 0;
+    }
+};
+
 export const listEvents = async () => {
-  const calendar = google.calendar({version: 'v3', auth: serviceAuth}); // creates instance of Google Calendar API client using GoogleAuth
-  try{
-    const result = await calendar.events.list({
-      calendarId: config.calendarID,
-      timeMin: (new Date()).toISOString(),
-      maxResults: 10,
-      singleEvents: true,
-      orderBy: 'startTime',
-      // Refactored Google Calendar service middleware to optimize data retrieval by selectively fetching only essential fields (summary, description, start, end, and attachments) for events. This change reduces the network bandwidth usage, improves response times, and decreases the processing load on both the server and client sides.
-      fields: 'items(id,summary,description,start,end,attachments)'
-    });
-    return result.data.items.map(formatEventDates);
-  } catch (error) {
-    console.error('Failed to list events', error);
-    throw new Error('Failed to list events');
-  }
-}
+    const now = Date.now();
+
+    if (cachedEvents && (now < cacheTimestamp + CACHE_DURATION)) {
+        console.log("Returning cached events");
+        return cachedEvents;
+    }
+
+    // Trigger background refresh
+    const events = await refreshEvents();
+
+    // If refresh fails, fall back to existing cache
+    if (!events) {
+      console.log("Returning previous cached events");
+      return cachedEvents;
+    }
+
+    return events;
+};

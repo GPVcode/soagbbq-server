@@ -1,13 +1,13 @@
 import express from 'express';
+import { listEvents } from '../services/googleCalendarService.js';
 
 const router = express.Router();
-
-import { listEvents } from '../services/googleCalendarService.js';
 
 router.get('/events', async (req, res) => {
     try{
         // data is filtered in calendar service
         const events = await listEvents();
+        console.log("Retrieved events:", events);
         res.json(events);
     } catch(error){
         console.error('Error retrieving events:', error);
