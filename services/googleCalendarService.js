@@ -12,10 +12,23 @@ const serviceAccountCredentialsJson = Buffer.from(config.serviceAccountCredentia
 const credentials = JSON.parse(serviceAccountCredentialsJson);
 
 const serviceAuth = new GoogleAuth({
-    // keyFile: config.serviceAccountKeyFile, // Path to your service account key file
-    credentials,
-    scopes: ['https://www.googleapis.com/auth/calendar.events.readonly'],
-  });
+  // keyFile: config.serviceAccountKeyFile, // Path to your service account key file
+  credentials,
+  scopes: ['https://www.googleapis.com/auth/calendar.events.readonly'],
+});
+
+
+const formatEventDates = (event) => {
+  const formattedEvent = { ...event };
+  if (event.start.dateTime) {
+    formattedEvent.start = new Date(event.start.dateTime).toLocaleString();
+    formattedEvent.end = new Date(event.end.dateTime).toLocaleString();
+  } else {
+    formattedEvent.start = new Date(event.start.date).toLocaleDateString();
+    formattedEvent.end = new Date(event.end.date).toLocaleDateString();
+  }
+  return formattedEvent;
+};
 
 // fetch list of calendar events from user's primary Google Calendar.
 export const listEvents = async () => {
@@ -30,7 +43,7 @@ export const listEvents = async () => {
       // Refactored Google Calendar service middleware to optimize data retrieval by selectively fetching only essential fields (summary, description, start, end, and attachments) for events. This change reduces the network bandwidth usage, improves response times, and decreases the processing load on both the server and client sides.
       fields: 'items(id,summary,description,start,end,attachments)'
     });
-    return result.data.items;
+    return result.data.items.map(formatEventDates);
   } catch (error) {
     console.error('Failed to list events', error);
     throw new Error('Failed to list events');
