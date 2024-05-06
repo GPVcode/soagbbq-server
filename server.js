@@ -1,9 +1,12 @@
 import express from 'express';
+import cors from 'cors';
+
 import { config } from './config/index.js'
 import { calendarRoute } from './routes/calendarRoutes.js'; 
 
-const app = express();
 
+const app = express();
+app.use(cors());
 app.use('/calendar', calendarRoute)
 
 // Error handling
