@@ -14,7 +14,7 @@ const calendar = google.calendar({ version: 'v3', auth: serviceAuth });
 
 let cachedEvents = null;
 let cacheTimestamp = 0;
-const CACHE_DURATION = 3600000;  // 1 hour in milliseconds
+const CACHE_DURATION = 86400000;  // 1 day in milliseconds
 
 const formatEventDates = (event) => {
     const formattedEvent = { ...event };
