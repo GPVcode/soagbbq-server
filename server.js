@@ -10,8 +10,7 @@ app.use('/calendar', calendarRoute)
 
 app.get('/ping', (req, res) => {
   try {
-      console.log('Warm')
-      res.send('OK');
+      res.send('K');
   } catch (error) {
       console.error('Ping Error:', error);
       res.status(500).send('Error');
