@@ -9,6 +9,7 @@ app.use(cors());
 app.use('/calendar', calendarRoute)
 
 app.get('/ping', (req, res) => {
+  console.log("Server Warm");
   res.status(200).send('Server Warm');
 });
 
