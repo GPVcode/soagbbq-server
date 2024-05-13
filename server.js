@@ -8,6 +8,10 @@ const app = express();
 app.use(cors());
 app.use('/calendar', calendarRoute)
 
+app.get('/ping', (req, res) => {
+  res.status(200).send('Server Warm');
+});
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
