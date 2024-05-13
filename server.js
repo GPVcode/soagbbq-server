@@ -10,7 +10,9 @@ app.use('/calendar', calendarRoute)
 
 app.get('/ping', (req, res) => {
   try {
-      res.send('K');
+      console.log('Request Headers:', req.headers);
+      res.send('OK');
+      console.log('Response sent with body "OK"');
   } catch (error) {
       console.error('Ping Error:', error);
       res.status(500).send('Error');
