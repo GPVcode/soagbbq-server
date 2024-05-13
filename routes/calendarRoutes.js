@@ -7,7 +7,7 @@ router.get('/events', async (req, res) => {
     try{
         // data is filtered in calendar service
         const events = await listEvents();
-        console.log("Retrieved events:", events);
+        console.log("Events retried!");
         res.json(events);
     } catch(error){
         console.error('Error retrieving events:', error);
