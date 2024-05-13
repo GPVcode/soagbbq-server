@@ -1,18 +1,18 @@
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import { config } from './config/index.js'
 import { calendarRoute } from './routes/calendarRoutes.js'; 
 
 
 const app = express();
 app.use(cors());
+app.use(compression());
 app.use('/calendar', calendarRoute)
 
 app.get('/ping', (req, res) => {
   try {
-      console.log('Request Headers:', req.headers);
       res.send('OK');
-      console.log('Response sent with body "OK"');
   } catch (error) {
       console.error('Ping Error:', error);
       res.status(500).send('Error');
