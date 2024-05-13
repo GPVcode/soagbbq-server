@@ -12,6 +12,7 @@ app.use('/calendar', calendarRoute)
 
 app.get('/ping', (req, res) => {
   try {
+      console.log("Awake")
       res.send('OK');
   } catch (error) {
       console.error('Ping Error:', error);
